@@ -5,6 +5,8 @@
 
 * 參考 [Install Docker on Ubuntu 18.04](http://ben-bai.blogspot.com/2019/10/motivation-i-want-to-try-rocketmq.html)
 
+* Docker Swarm 主要參考官方文件 [Swarm mode key concepts](https://docs.docker.com/engine/swarm/key-concepts/)、[Create a swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/)、[Deploy a service to the swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/deploy-service/)
+
 ### 用來測試的檔案
 就是 [這個 Dockerfile](https://github.com/benbai123/LotsOfThings_-/blob/PHP_Docker_Swarm/Dockerfile)
 
@@ -18,7 +20,7 @@
 * 執行 `sudo docker swarm init --advertise-addr 172.17.0.1` 啟動 swarm, 其中 `172.17.0.1` 要改為該 host 的實際 ip, 可在 terminal 中執行 `ifconfig` 或 `hostname -i` 查詢 host ip
 * 執行 `sudo docker service create --replicas 2 --publish 3333:80 --name phpcs phpi` 啟動一個 service, 該 service 會有兩個執行實體, 並使用 3333 port
 * service 啟動後, 可以使用 `sudo docker service ls` 查詢狀態, 或以 `sudo docker service rm phpcs` 將其移除
-* 同樣在 host 的瀏覽器中連到 localhost:3333/test.php 測試
+* 同樣在 host 的瀏覽器中連到 localhost:3333/test.php 測試，重新整理頁面多次會發現有時數字會不連續，主要是因為以下問題
 
 ### 已知問題
 * 沒有 sticky session: 每次重整頁面可能會連到不同的 container, 因此 session 會失效, 官方解法需要付費版本, 參見 [Deploy a layer 7 routing solution](https://docs.docker.com/ee/ucp/interlock/deploy/) 以及 [Implement persistent (sticky) sessions](https://docs.docker.com/ee/ucp/interlock/usage/sessions/)

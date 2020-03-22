@@ -28,3 +28,7 @@
 * 先將
 * 由瀏覽器連到 test_session.php, 重整多次頁面, 應該看到數字持續增加
 * 以 sql `select * from sessions;` 查詢存 Session 的 table, 應該可以看到儲存在資料庫中的 Session 資料
+
+### 參考資料
+
+[How to save PHP Sessions to a database](https://culttt.com/2013/02/04/how-to-save-php-sessions-to-a-database/)

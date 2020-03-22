@@ -1,0 +1,7 @@
+{
+	"test": {
+		"config": {
+			"url": "url?from=${from}&to=${to}&key=${key}"
+		}
+	}
+}

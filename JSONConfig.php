@@ -44,4 +44,6 @@
 			return strtr($config, $toapply);
 		}
 	}
+	$conf = new JSONConfig();
+	$conf->load('config.json');
 ?>

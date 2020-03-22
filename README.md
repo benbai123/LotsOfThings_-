@@ -9,6 +9,7 @@
 ### PHP
 #### Common
 ##### [PHP Store Session to Database](https://github.com/benbai123/LotsOfThings_-/tree/php_store_session_to_database) - 將 PHP 的 Session 操作改為存取資料庫
+##### [PHP Use JSON Config](https://github.com/benbai123/LotsOfThings_-/tree/php_use_json_config) - PHP 中使用 JSON 設定檔, 另外以 template string 填入設定值
 
 #### Unit Test
 ##### [PHP CI Unit Testing](https://github.com/benbai123/LotsOfThings_-/tree/PHP_CI_Unit_Testing) - 使用 PHP CI 框架自帶的 Unit Test

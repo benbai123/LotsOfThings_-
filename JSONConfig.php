@@ -44,6 +44,9 @@
 			return strtr($config, $toapply);
 		}
 	}
+	
+	// 載入 config 檔,
+	// 也可以在程式中依需要生成實體載入不同的檔案
 	$conf = new JSONConfig();
 	$conf->load('config.json');
 ?>

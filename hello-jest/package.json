@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "jest": "^25.5.4",
+    "rewire": "^5.0.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "test-watchAll": "jest --watchAll"
+  }
+}

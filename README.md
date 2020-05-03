@@ -17,6 +17,9 @@
 #### Docker
 ##### [PHP Docker Swarm](https://github.com/benbai123/LotsOfThings_-/tree/PHP_Docker_Swarm)
 
+### JavaScript
+#### [JS Test with Jest](https://github.com/benbai123/LotsOfThings_-/tree/js_test_with_jest) 使用 Jest 測試 JavaScript 方法
+
 ### TODOs
 
 ##### NodeJS Selenium Commands Testing

@@ -25,6 +25,9 @@
 
 #### [shell_get_params](https://github.com/benbai123/LotsOfThings_-/tree/shell_get_params) Shell script 中取得 command line 參數
 
+#### [shell_get_properties_from_file](https://github.com/benbai123/LotsOfThings_-/tree/shell_get_properties_from_file) Shell script 中取檔案中的 property value
+
+
 ### TODOs
 
 ##### NodeJS Selenium Commands Testing

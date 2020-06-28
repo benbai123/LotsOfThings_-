@@ -1,20 +1,3 @@
-# LotsOfThings_雜七雜八
-
-
-### Shell script 中取檔案中的 property value
-
-### 測試
-
-下載或複製 test.sh 的內容並執行 test.sh 會印出 test.properties 中的 propA 與 propB 的值
-
-### 測試範例
-```shell
-./test.sh
-```
-
-### test.sh 內容
-
-```shell
 #!/bin/bash
 
 # 取得此 script 檔案的位置
@@ -38,4 +21,3 @@ pval="${paramDef#*=}"
 pval="${pval#* }"
 pval="${pval% *}"
 echo "propB: -${pval}-"
-```

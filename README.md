@@ -20,6 +20,10 @@
 ### JavaScript
 #### [JS Test with Jest](https://github.com/benbai123/LotsOfThings_-/tree/js_test_with_jest) 使用 Jest 測試 JavaScript 方法
 
+### Shell
+#### [shell_get_script_folder](https://github.com/benbai123/LotsOfThings_-/tree/shell_get_script_folder) Shell script 中取得 script 檔案本身所在的路徑
+
+
 ### TODOs
 
 ##### NodeJS Selenium Commands Testing

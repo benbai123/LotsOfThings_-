@@ -1,18 +1,30 @@
 # LotsOfThings_雜七雜八
-Repo for learn/practice lots of things quickly - 用來快速練習各種東西的 Repo
+
+
+### Shell script 中取得 script 檔案本身所在的路徑
 
 ### 簡介
-* Master 分支將不會有任何東西
-* 所有的東西獨立開一個分支存放
-* 每個分支只會有一個主要題目 - 簡單、清楚為最高原則
-* 各分支相關說明會在一個 [desc 分支](https://github.com/benbai123/LotsOfThings_-/tree/desc)
-* 會有很多雜七雜八的東西 - 前端、後端、系統、etc
-* 會有很多不同語言 - NodeJS、PHP、Java、Shell、etc
 
-### 為何這麼做
-* Master 沒有東西, 可以快速 Clone 專案
-* Check 各分支時只下載真的需要的部份
+在不同位置執行 shell script 時若需要以 script 本身位置取相對路徑有點麻煩, 以此分支做一個記錄
 
-### 歡迎參考/取用
+### 測試
 
-### 也歡迎出題
+下載或複製 test.sh 的內容並以任何方式 (絕對路徑、相對路徑等) 執行, 不論 terminal 中當前路徑為何都可印出 test.sh 本身的路徑
+
+### test.sh 內容
+
+```shell
+#!/bin/bash
+
+# 取得此檔案的位置
+script_path="$(readlink -f "$0")"
+script_dir="$(dirname "${script_path}")"
+
+# 找到 上一層
+parent_dir="$(readlink -f "${script_dir}/..")"
+
+echo "執行此 script 的命令 : $0"
+echo "此 script 的絕對路徑 : ${script_path}"
+echo "此 script 的所在目錄 : ${script_dir}"
+echo "此 script 的上一層目錄 : ${parent_dir}"
+```

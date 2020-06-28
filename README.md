@@ -5,7 +5,7 @@
 
 ### 測試
 
-下載或複製 test.sh 的內容並執行 test.sh 會印出 test.properties 中的 propA 與 propB 的值
+下載或複製 test.sh 的內容, 與 test.properties 放在同一目錄下, 執行 test.sh 會印出 test.properties 中的 propA 與 propB 的值
 
 ### 測試範例
 ```shell

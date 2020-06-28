@@ -23,6 +23,7 @@
 ### Shell
 #### [shell_get_script_folder](https://github.com/benbai123/LotsOfThings_-/tree/shell_get_script_folder) Shell script 中取得 script 檔案本身所在的路徑
 
+#### [shell_get_params](https://github.com/benbai123/LotsOfThings_-/tree/shell_get_params) Shell script 中取得 command line 參數
 
 ### TODOs
 

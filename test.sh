@@ -1,24 +1,3 @@
-# LotsOfThings_雜七雜八
-
-
-### Shell script 中取得 command line 參數
-
-### 簡介
-
-在 shell script 中取得 command line 參數的方法
-
-### 測試
-
-下載或複製 test.sh 的內容並在執行時輸入 `-u=xxx` `-p=xxx` 會顯示輸入的參數內容, 也可輸入更多其它參數
-
-### 測試範例
-```shell
-./test.sh -u=aaa -p='bbb ccc' -other=otherparam
-```
-
-### test.sh 內容
-
-```shell
 #!/bin/bash
 
 other='others : '
@@ -51,4 +30,3 @@ else
 	echo "password : ${password}"
 	echo ${other}
 fi
-```

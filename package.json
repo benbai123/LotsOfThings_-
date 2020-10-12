@@ -1,0 +1,24 @@
+{
+  "name": "LotsOfThings_-",
+  "version": "1.0.0",
+  "description": "NodeJS 中使用 Selenium 的各種相關指令測試",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benbai123/LotsOfThings_-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benbai123/LotsOfThings_-/issues"
+  },
+  "homepage": "https://github.com/benbai123/LotsOfThings_-#readme",
+  "dependencies": {
+    "chromedriver": "^86.0.0",
+    "selenium-webdriver": "^4.0.0-alpha.7"
+  }
+}

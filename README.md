@@ -1,18 +1,16 @@
-# LotsOfThings_雜七雜八
-Repo for learn/practice lots of things quickly - 用來快速練習各種東西的 Repo
+# NodeJS Selenium Getting Started
+NodeJS 中使用 Selenium 的各種相關指令測試
 
-### 簡介
-* Master 分支將不會有任何東西
-* 所有的東西獨立開一個分支存放
-* 每個分支只會有一個主要題目 - 簡單、清楚為最高原則
-* 各分支相關說明會在一個 [desc 分支](https://github.com/benbai123/LotsOfThings_-/tree/desc)
-* 會有很多雜七雜八的東西 - 前端、後端、系統、etc
-* 會有很多不同語言 - NodeJS、PHP、Java、Shell、etc
+### Versions
 
-### 為何這麼做
-* Master 沒有東西, 可以快速 Clone 專案
-* Check 各分支時只下載真的需要的部份
+`npm 6.14.4`, `node 12.16.1`
 
-### 歡迎參考/取用
+### 步驟
 
-### 也歡迎出題
+以下為由空資料夾開始的步驟
+
+1. 建立一個專案資料夾, 以 cmd (Command Prompt) 進入
+2. 在 cmd 中執行 `npm init -y` 初始化專案
+3. 在 cmd 中執行 `npm install selenium-webdriver` 安裝 selenium 相關 library
+4. 在 cmd 中執行 `npm install chromedriver` 安裝 chrome driver
+5. 在 cmd 中執行 node CommandsTesting.js

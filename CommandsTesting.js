@@ -10,6 +10,8 @@ const {Builder, By, Key, until} = require('selenium-webdriver');
             .then(testElementsSelection)
             // 測試與各種輸入元素互動
             .then(testInput);
+            // 測試 select/option
+            .then(testSelect);
     } catch (e) {
         console.log(e);
     } finally{
@@ -277,6 +279,48 @@ const {Builder, By, Key, until} = require('selenium-webdriver');
                 await driver.executeScript("addDays(arguments[0], -2);", dateInput).then(waitForEyes);
                 await driver.sleep(3000);
             });
+    }
+    async function testSelect () {
+        let testingBlock = await driver.findElement(By.className('select-option'));
+
+        await driver.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'auto'});", testingBlock);
+        await driver.sleep(3000);
+
+        let select = testingBlock.findElement(By.className("test-single-select"));
+
+        /*
+         * select another option by click
+         */
+        await select.click()
+            .then(async ()=>{
+                await driver.sleep(500);
+                let e = await select.findElement(By.css("option[value='sleep']"));
+                await e.click();
+                await select.click();
+                await driver.sleep(1000)
+            });
+
+        // get test-multiple-select
+        select = testingBlock.findElement(By.className("test-multiple-select"));
+        // select cheese
+        await select.findElement(By.css("option[value='cheese']")).then(async (e)=>{
+                await e.click();
+                await driver.sleep(500);
+
+                // control-select ham
+                await driver.actions().keyDown(Key.COMMAND)
+                    .click( await select.findElement(By.css("option[value='ham']")) )
+                    .keyUp(Key.COMMAND).perform();
+                await driver.sleep(500);
+
+                // shift-select egg to beef
+                await driver.actions().keyDown(Key.SHIFT)
+                    .click( await select.findElement(By.css("option[value='beef']")) )
+                    .keyUp(Key.SHIFT).perform();
+
+                await driver.sleep(1000);
+            })
+
     }
     async function waitForEyes() {
         await driver.sleep(500);

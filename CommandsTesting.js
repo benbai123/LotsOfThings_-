@@ -9,9 +9,19 @@ const {Builder, By, Key, until} = require('selenium-webdriver');
             // 測試選取 dom element 的方法
             .then(testElementsSelection)
             // 測試與各種輸入元素互動
-            .then(testInput);
+            .then(testInput)
             // 測試 select/option
-            .then(testSelect);
+            .then(testSelect)
+            // test move to iframe and back
+            .then(testIFrames).catch(e=>console.log(e))
+            // test move to child window(s) and back
+            .then(testNewBrowserWindows)
+            // test window history
+            .then(testBrowserHistory)
+            // flow control
+            .then(testFlowControl)
+            // Screenshot
+            .then(testScreenShot);
     } catch (e) {
         console.log(e);
     } finally{
@@ -321,6 +331,195 @@ const {Builder, By, Key, until} = require('selenium-webdriver');
                 await driver.sleep(1000);
             })
 
+    }
+    async function testIFrames() {
+        let iframe = await driver.findElement(By.id('iframe001'));
+        // move to iframe001
+        await driver.switchTo().frame(iframe)
+            .then(async ()=>{
+                let ele = await driver.findElement(By.className("iframe-content"));
+                let content = await ele.getText();
+                console.log('iframe001 content');
+                console.log(content);
+                if ('content in iframe 001' != content) throw 'content not expected';
+            });
+
+        // move to iframe002 inside iframe001
+        iframe = await driver.findElement(By.id('iframe002'));
+        await driver.switchTo().frame(iframe)
+            .then(async ()=>{
+                let ele = await driver.findElement(By.className("iframe-content"));
+                let content = await ele.getText();
+                console.log('iframe002 content');
+                console.log(content);
+                if ('content in iframe 002' != content) throw 'content not expected';
+            });
+
+        // back to default window
+        await driver.switchTo().defaultContent();
+        // move to iframe003
+        iframe = await driver.findElement(By.id('iframe003'));
+        await driver.switchTo().frame(iframe)
+            .then(async ()=>{
+                let ele = await driver.findElement(By.className("iframe-content"));
+                let content = await ele.getText();
+                console.log('iframe003 content');
+                console.log(content);
+                if ('content in iframe 003' != content) throw 'content not expected';
+            });
+        await driver.switchTo().defaultContent();
+    }
+    async function testNewBrowserWindows() {
+        let testingBlock = await driver.findElement(By.className("child-windows"));
+        let testElem = await testingBlock.findElement(By.tagName("a"));
+        let origin = await driver.getWindowHandle();
+
+        let winHandles = {};
+
+        await driver.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'auto'});", testingBlock);
+
+
+        await testElem.click();
+        // track the opened window
+        await driver.getAllWindowHandles().then((all)=>{
+            winHandles['win001'] = all.filter(e=>e!=origin && !Object.values(winHandles).includes(e))[0];
+        });
+        // switch to win001
+        driver.switchTo().window(winHandles['win001']);
+        await driver.sleep(500);
+
+        let content = await driver.findElement(By.className("window-content")).getText();
+        let expected = "content in window 001";
+        console.log(content);
+        if (expected != content) throw 'content should be ' + expected;
+
+        // back to original window
+        await driver.switchTo().window(origin);
+        await driver.sleep(500);
+
+
+        // test window_002
+        testElem = await testingBlock.findElement(By.className("newwin-002"));
+        await testElem.click();
+
+        // track the opened window
+        await driver.getAllWindowHandles().then((all)=>{
+            winHandles['win002'] = all.filter(e=>e!=origin && !Object.values(winHandles).includes(e))[0];
+        });
+        await driver.switchTo().window(winHandles['win002']);
+        await driver.sleep(500);
+
+        content = await driver.findElement(By.className("window-content")).getText();
+        expected = "content in window 002";
+        console.log(content);
+        if (expected != content) throw 'content should be ' + expected;
+        await driver.switchTo().window(origin);
+
+
+        // test window_003
+        testElem = await testingBlock.findElement(By.className("newwin-003"));
+        await testElem.click();
+        await driver.getAllWindowHandles().then((all)=>{
+            winHandles['win003'] = all.filter(e=>e!=origin && !Object.values(winHandles).includes(e))[0];
+        });
+        await driver.switchTo().window(winHandles['win003']);
+        await driver.sleep(500);
+        content = await driver.findElement(By.className("window-content")).getText();
+        expected = "content in window 003";
+        console.log(content);
+        if (expected != content) throw 'content should be ' + expected;
+        await driver.switchTo().window(origin);
+
+
+        // close win001~win003
+        await driver.switchTo().window(winHandles['win001']);
+        await driver.sleep(500);
+        await driver.close();
+        await driver.sleep(500);
+        
+        await driver.switchTo().window(winHandles['win002']);
+        await driver.sleep(500);
+        await driver.close();
+        await driver.sleep(500);
+
+        await driver.switchTo().window(winHandles['win003']);
+        await driver.sleep(500);
+        await driver.close();
+        await driver.sleep(500);
+
+        // back to origin
+        await driver.switchTo().window(origin);
+        await driver.sleep(1000);
+    }
+    async function testBrowserHistory () {
+        // locate to testing block first
+        let testingBlock = await driver.findElement(By.className("browser-history"));
+        await driver.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'auto'});", testingBlock);
+        // to next page 001
+        await testingBlock.findElement(By.className("nextpage001")).click();
+        await driver.sleep(500);
+        // to next page 002
+        await driver.findElement(By.className("nextpage002")).click();
+        await driver.sleep(500);
+
+        // back
+        await driver.navigate().back();
+        await driver.sleep(500);
+        console.log(await driver.findElement(By.className("next-page-content")).getText());
+        // forward
+        await driver.navigate().forward();
+        await driver.sleep(500);
+        console.log(await driver.findElement(By.className("next-page-content")).getText());
+
+        // back to first page (second history) from last page
+        await driver.executeScript("window.history.go(-(window.history.length - 2))");
+        // relocate testing block
+        testingBlock = await driver.findElement(By.className("browser-history"));
+        await driver.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'auto'});", testingBlock);
+        await driver.sleep(500);
+
+
+        // test history.pushState
+        let ele = await driver.findElement(By.className("push-state-link"));
+        await ele.click();
+        await driver.sleep(500);
+        if (await ele.isDisplayed()) throw 'push-state-link is visible';
+        await driver.navigate().back();
+        await driver.sleep(500);
+        if (false == await ele.isDisplayed()) throw 'push-state-link is not visible';
+        driver.navigate().forward();
+        await driver.sleep(500);
+        if (await ele.isDisplayed()) throw 'push-state-link is visible';
+
+        await driver.sleep(1000);
+    }
+    async function testFlowControl() {
+        // locate to testing block first
+        let testingBlock = await driver.findElement(By.className("flow-control"));
+        let ele = await testingBlock.findElement(By.className("add-child"));
+        await driver.executeScript("arguments[0].scrollIntoView({block: 'center', behavior: 'auto'});", testingBlock);
+        await driver.sleep(500);
+
+        await ele.click();
+        await driver.wait(until.elementLocated(By.className('added-child')), 6000);
+
+
+        ele = await testingBlock.findElement(By.className('to-be-hidden'));
+        await ele.click();
+        await driver.wait(until.elementIsNotVisible(ele), 12000);
+
+        await driver.sleep(1000);
+    }
+    async function testScreenShot() {
+        await driver.takeScreenshot().then(
+            function(image, err) {
+                require('fs').writeFile('out.png', image, 'base64', function(err) {
+                    if (err) console.log(err);
+                    else console.log('screenshot saved');
+                });
+            }
+        );
+        await driver.sleep(1000);
     }
     async function waitForEyes() {
         await driver.sleep(500);

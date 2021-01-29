@@ -5,6 +5,7 @@
 ### NodeJS
 #### 瀏覽器自動化
 ##### [NodeJS Selenium Getting Started](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_gettingstarted) - 在 NodeJS 下開始使用 Selenium
+##### [NodeJS Selenium Commands Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_commands_testing) - 在 NodeJS 下使用 Selenium 的各種方法/命令
 
 ### PHP
 #### Common
@@ -29,9 +30,6 @@
 
 
 ### TODOs
-
-##### NodeJS Selenium Commands Testing
-在 NodeJS 下使用 Selenium 的各種方法/命令
 
 ##### NodeJS Diff Image
 在 NodeJS 中比對兩張圖檔並框出不同的部份

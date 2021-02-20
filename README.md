@@ -1,5 +1,9 @@
-# NodeJS Selenium Getting Started
+# NodeJS Selenium Commands Testing
 NodeJS 中使用 Selenium 的各種相關指令測試
+
+### 環境
+
+Mac 用，Windows 中要把程式中的 Command Key 改成 Ctrl Key
 
 ### Versions
 

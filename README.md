@@ -2,6 +2,10 @@
 
 所有分支的清單, 主要會以使用的語言當分類大項
 
+### Webpack
+#### 前端使用 yoastseo
+##### [Web Frontend Yoastseo](https://github.com/benbai123/LotsOfThings_-/tree/web_frontend_yoastseo)
+
 ### NodeJS
 #### 瀏覽器自動化
 ##### [NodeJS Selenium Getting Started](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_gettingstarted) - 在 NodeJS 下開始使用 Selenium

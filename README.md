@@ -7,7 +7,7 @@
 * 使用 nodejs 15, 安裝命令如下
 
 ```
-## ubuntu 的 shwll 中
+## ubuntu 的 shell 中
 curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
 
 sudo apt-get install -y nodejs

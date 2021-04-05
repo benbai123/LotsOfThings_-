@@ -19,3 +19,10 @@ sudo apt-get install -y nodejs
 ```
 npm install --save pngjs
 ```
+
+執行 (先將 dest.png 刪除)
+```
+node test.js
+```
+
+執行後可看到重新生成 dest.png, 將 src.png 中白色的部份轉為透明

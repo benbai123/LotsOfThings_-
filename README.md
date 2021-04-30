@@ -1,13 +1,13 @@
 # NodeJS Use PM2
 使用 PM2 執行 nodejs 程式
 
+### 優點
+可在有修改時 hot redeploy, 在有錯誤或記憶體佔用太多時自動重啟等
+
 ### 環境
 
 * Ubuntu 18.04
 * 使用 nodejs 15, 安裝命令如下
-
-### 優點
-可在有修改時 hot redeploy, 在有錯誤或記憶體佔用太多時自動重啟等
 
 ```
 ## ubuntu 的 shell 中

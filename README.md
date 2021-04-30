@@ -1,18 +1,43 @@
-# LotsOfThings_雜七雜八
-Repo for learn/practice lots of things quickly - 用來快速練習各種東西的 Repo
+# NodeJS Use PM2
+使用 PM2 執行 nodejs 程式
 
-### 簡介
-* Master 分支將不會有任何東西
-* 所有的東西獨立開一個分支存放
-* 每個分支只會有一個主要題目 - 簡單、清楚為最高原則
-* 各分支相關說明會在一個 [desc 分支](https://github.com/benbai123/LotsOfThings_-/tree/desc)
-* 會有很多雜七雜八的東西 - 前端、後端、系統、etc
-* 會有很多不同語言 - NodeJS、PHP、Java、Shell、etc
+### 環境
 
-### 為何這麼做
-* Master 沒有東西, 可以快速 Clone 專案
-* Check 各分支時只下載真的需要的部份
+* Ubuntu 18.04
+* 使用 nodejs 15, 安裝命令如下
 
-### 歡迎參考/取用
+### 優點
+可在有修改時 hot redeploy, 在有錯誤或記憶體佔用太多時自動重啟等
 
-### 也歡迎出題
+```
+## ubuntu 的 shell 中
+curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
+
+sudo apt-get install -y nodejs
+```
+
+### 建立專案及測試
+
+安裝 PM2
+```
+sudo npm install pm2@latest -g
+```
+
+執行
+```
+pm2 start --watch --name pm2test --exp-backoff-restart-delay 100 --max-memory-restart 2000M -i max test.js
+```
+
+查看執行時的 log, 其中 pm2test 是執行時給定的名稱
+```
+pm2 log pm2test
+```
+
+其它常用命令
+```
+# 停止
+pm2 stop pm2test
+
+# 再啟動
+pm2 start pm2test
+```

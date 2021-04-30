@@ -11,6 +11,8 @@
 ### NodeJS
 #### 圖檔處理
 ##### [NodeJS PNG Processing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_png_processing) - NodeJS 中使用 PNGjs 處理圖檔
+#### 使用 PM2 執行 nodejs 程式
+##### [NodeJS Use PM2](https://github.com/benbai123/LotsOfThings_-/blob/nodejs_use_pm2/README.md)
 #### 瀏覽器自動化
 ##### [NodeJS Selenium Getting Started](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_gettingstarted) - 在 NodeJS 下開始使用 Selenium
 ##### [NodeJS Selenium Commands Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_commands_testing) - 在 NodeJS 下使用 Selenium 的各種方法/命令

@@ -15,6 +15,7 @@
 ##### [NodeJS Use PM2](https://github.com/benbai123/LotsOfThings_-/blob/nodejs_use_pm2/README.md) - 使用 PM2 執行 nodejs 程式
 #### 測試
 ##### [NodeJS Jest Unittest](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_jest_unittest) - 使用 Jest 對 js 程式做 unit test
+##### [NodeJS Supertest API Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_supertest_apitesting) - NodeJS 中使用 Supertest 測試 API
 #### 瀏覽器自動化
 ##### [NodeJS Selenium Getting Started](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_gettingstarted) - 在 NodeJS 下開始使用 Selenium
 ##### [NodeJS Selenium Commands Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_commands_testing) - 在 NodeJS 下使用 Selenium 的各種方法/命令

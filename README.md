@@ -1,18 +1,55 @@
-# LotsOfThings_雜七雜八
-Repo for learn/practice lots of things quickly - 用來快速練習各種東西的 Repo
+# NodeJS Supertest API Testing
+NodeJS 中使用 Supertest 測試 API
 
-### 簡介
-* Master 分支將不會有任何東西
-* 所有的東西獨立開一個分支存放
-* 每個分支只會有一個主要題目 - 簡單、清楚為最高原則
-* 各分支相關說明會在一個 [desc 分支](https://github.com/benbai123/LotsOfThings_-/tree/desc)
-* 會有很多雜七雜八的東西 - 前端、後端、系統、etc
-* 會有很多不同語言 - NodeJS、PHP、Java、Shell、etc
+### 前言
 
-### 為何這麼做
-* Master 沒有東西, 可以快速 Clone 專案
-* Check 各分支時只下載真的需要的部份
+supertest 可以在不實際啟動 Server 的情形下進行 api 測試,
 
-### 歡迎參考/取用
+它實際上是自動起一個服務並將 request 導去該服務中
 
-### 也歡迎出題
+### 目錄結構
+
+nodejs app 及 API 的部份使用 express, 放置於 app 目錄下
+
+Jest/Supertest 的部份放置於 test 目錄下
+
+### 環境
+
+* Ubuntu 18.04
+* 使用 nodejs 15, 安裝命令如下
+
+```
+## ubuntu 的 shell 中
+curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
+
+sudo apt-get install -y nodejs
+```
+
+### 建立專案及測試
+
+安裝 express
+```
+npm install --save express
+```
+
+安裝 Jest 及 supertest
+```
+npm install --save supertest
+npm install --save-dev jest
+```
+
+加入 scripts 到 `package.json`
+```
+  "scripts": {
+    "test": "jest"
+  },
+```
+
+執行測試
+```
+npm run test
+```
+
+會看到執行測試並通過
+
+可試試將 `test/testApi.test.js` 中的 `toBe('Hello Ben!');` 改成其它字串看看測試錯誤的情形

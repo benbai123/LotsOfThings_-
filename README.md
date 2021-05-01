@@ -34,8 +34,7 @@ npm install --save express
 
 安裝 Jest 及 supertest
 ```
-npm install --save supertest
-npm install --save-dev jest
+npm install --save-dev jest supertest
 ```
 
 加入 scripts 到 `package.json`

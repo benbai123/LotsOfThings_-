@@ -41,3 +41,6 @@ npm run test-watchAll
 可以試試 watch all 再故意將 sum.js 改成錯誤的 `return a + b + 2;`
 
 會看到重跑 test 並出現錯誤訊息
+
+### Reference
+[jest](https://jestjs.io/)

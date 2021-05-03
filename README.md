@@ -52,3 +52,6 @@ npm run test
 會看到執行測試並通過
 
 可試試將 `test/testApi.test.js` 中的 `toBe('Hello Ben!');` 改成其它字串看看測試錯誤的情形
+
+### Reference
+[supertest](https://www.npmjs.com/package/supertest)

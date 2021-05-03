@@ -18,6 +18,8 @@ sudo apt-get install -y nodejs
 
 ### 建立專案及測試
 
+#### 安裝在 global, 需實際執行以下命令安裝
+
 安裝 PM2
 ```
 sudo npm install pm2@latest -g

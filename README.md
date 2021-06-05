@@ -43,6 +43,8 @@
 
 #### [shell_get_properties_from_file](https://github.com/benbai123/LotsOfThings_-/tree/shell_get_properties_from_file) Shell script 中取檔案中的 property value
 
+### Ubuntu
+#### [ubuntu_1804_redis](https://github.com/benbai123/LotsOfThings_-/tree/ubuntu_1804_redis) - Ubuntu 18.04 安裝與設定 redis
 
 ### TODOs
 

@@ -1,18 +1,28 @@
-# LotsOfThings_雜七雜八
-Repo for learn/practice lots of things quickly - 用來快速練習各種東西的 Repo
+# NodeJS 使用 redis 與 redlock 做 Distributed locks (分散式鎖)
 
-### 簡介
-* Master 分支將不會有任何東西
-* 所有的東西獨立開一個分支存放
-* 每個分支只會有一個主要題目 - 簡單、清楚為最高原則
-* 各分支相關說明會在一個 [desc 分支](https://github.com/benbai123/LotsOfThings_-/tree/desc)
-* 會有很多雜七雜八的東西 - 前端、後端、系統、etc
-* 會有很多不同語言 - NodeJS、PHP、Java、Shell、etc
+### 安裝 redis
 
-### 為何這麼做
-* Master 沒有東西, 可以快速 Clone 專案
-* Check 各分支時只下載真的需要的部份
+參照 [Ubuntu 18.04 安裝與設定 redis](https://github.com/benbai123/LotsOfThings_-/tree/ubuntu_1804_redis)
 
-### 歡迎參考/取用
+### 初始化專案及安裝 redis 與 redlock
+```
+$ npm init -y
+$ npm install --save redis redlock
+```
 
-### 也歡迎出題
+### 測試
+
+```
+$ node test.js
+
+# output
+first lock success
+falied to lock second lock
+third lock success
+```
+
+Ref
+
+[Node Redis](https://www.npmjs.com/package/redis)
+
+[Redlock](https://www.npmjs.com/package/redlock)

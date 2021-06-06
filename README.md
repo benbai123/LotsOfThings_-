@@ -84,11 +84,12 @@ $ sudo vi /etc/redis/redis.conf
 ```
 # 加入以下內容
 # 取代為空字串即為停用
+# DEL redlock unlock 會需要可保留
 rename-command FLUSHDB ""
 rename-command FLUSHALL ""
 rename-command KEYS ""
 rename-command PEXPIRE ""
-rename-command DEL ""
+# rename-command DEL ""
 rename-command CONFIG ""
 rename-command SHUTDOWN ""
 rename-command BGREWRITEAOF ""

@@ -25,6 +25,8 @@
 #### 分散式處理
 ##### [NodeJS Distributed Locks With Redis Redlock](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_redis_lock) - NodeJS 使用 Redis 與 Redlock 做 Distributed Locks (分散式鎖)
 
+##### [NodeJS Redis Publish–Subscribe](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_redis_pubsub) - NodeJS 使用 redis 實作 Publish–Subscribe Pattern
+
 #### 瀏覽器自動化
 ##### [NodeJS Selenium Getting Started](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_gettingstarted) - 在 NodeJS 下開始使用 Selenium
 ##### [NodeJS Selenium Commands Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_commands_testing) - 在 NodeJS 下使用 Selenium 的各種方法/命令

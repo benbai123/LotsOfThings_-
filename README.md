@@ -11,13 +11,20 @@
 ### NodeJS
 #### 圖檔處理
 ##### [NodeJS PNG Processing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_png_processing) - NodeJS 中使用 PNGjs 處理圖檔
+
 #### 佈署
 ##### [NodeJS Use PM2](https://github.com/benbai123/LotsOfThings_-/blob/nodejs_use_pm2/README.md) - 使用 PM2 執行 nodejs 程式
+
 #### 測試
 ##### [NodeJS Jest Unittest](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_jest_unittest) - 使用 Jest 對 js 程式做 unit test
 ##### [NodeJS Supertest API Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_supertest_apitesting) - NodeJS 中使用 Supertest 測試 API
+
 #### API 文件化
 ##### [NodeJS Swagger UI and Generator](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_swagger_generator) - NodeJS 中使用 Supertest 搭配 Swagger Generator 自動生成 Swagger 文件
+
+#### 分散式處理
+##### [NodeJS Distributed Locks With Redis Redlock](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_redis_lock) - NodeJS 使用 Redis 與 Redlock 做 Distributed Locks (分散式鎖)
+
 #### 瀏覽器自動化
 ##### [NodeJS Selenium Getting Started](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_gettingstarted) - 在 NodeJS 下開始使用 Selenium
 ##### [NodeJS Selenium Commands Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_commands_testing) - 在 NodeJS 下使用 Selenium 的各種方法/命令

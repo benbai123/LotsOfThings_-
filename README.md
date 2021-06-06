@@ -1,4 +1,4 @@
-# NodeJS 使用 redis 與 redlock 做 Distributed locks (分散式鎖)
+# NodeJS 使用 redis 做 Publish–Subscribe Pattern
 
 ### 安裝 redis
 
@@ -22,3 +22,5 @@ Subscriber received message in channel 'a channel': another message
 Ref
 
 [Node Redis PubSub](https://www.npmjs.com/package/redis#pubsub)
+
+[wiki Publish–Subscribe Pattern](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern)

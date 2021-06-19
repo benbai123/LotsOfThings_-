@@ -1,18 +1,41 @@
-# LotsOfThings_雜七雜八
-Repo for learn/practice lots of things quickly - 用來快速練習各種東西的 Repo
 
-### 簡介
-* Master 分支將不會有任何東西
-* 所有的東西獨立開一個分支存放
-* 每個分支只會有一個主要題目 - 簡單、清楚為最高原則
-* 各分支相關說明會在一個 [desc 分支](https://github.com/benbai123/LotsOfThings_-/tree/desc)
-* 會有很多雜七雜八的東西 - 前端、後端、系統、etc
-* 會有很多不同語言 - NodeJS、PHP、Java、Shell、etc
+# 建立 VirtualBox VM 並用 VS Code 以 SSH 連入操作
 
-### 為何這麼做
-* Master 沒有東西, 可以快速 Clone 專案
-* Check 各分支時只下載真的需要的部份
+### 概要
 
-### 歡迎參考/取用
+介紹如何以 VirtualBox 在本機建立 Ubuntu VM
 
-### 也歡迎出題
+並使用 Visual Studio Code 遠端開發 Plugin 
+
+以 ssh 連線方式連入 VM 操作
+
+參見影片檔案 VSCcode_ssh連線_本機VM.mp4
+
+或觀看線上版本 [VSCcode_ssh連線_本機VM](https://drive.google.com/file/d/1OCKFo4JHivoJgdo0OWIWcrsMvDAObddu/view?usp=sharing)
+
+### 相關工具或軟體
+
+[Visual Studio Code](https://code.visualstudio.com/)
+
+[VirtualBox](https://www.virtualbox.org/)
+
+[Ubuntu Download](https://ubuntu.com/download)
+
+
+### 讓 Ubuntu 可以接受 ssh 連線
+
+```
+# 練習專用設定
+# 更多相關安全性設定見 https://askubuntu.com/a/51926
+
+sudo apt update -y
+sudo apt install -y ssh
+sudo ufw allow 22
+```
+
+### 以 VS Code ssh 連入 VM 後建測試檔
+
+```
+cd ~/Public
+touch test.txt
+```

@@ -55,6 +55,8 @@
 ### Ubuntu
 #### [ubuntu_1804_redis](https://github.com/benbai123/LotsOfThings_-/tree/ubuntu_1804_redis) - Ubuntu 18.04 安裝與設定 redis
 
+#### [ubuntu_vm_vscode_ssh](https://github.com/benbai123/LotsOfThings_-/tree/ubuntu_vm_vscode_ssh) - VS Code 以 SSH 連進本機 VirtualBox VM
+
 ### TODOs
 
 ##### NodeJS Diff Image

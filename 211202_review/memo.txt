@@ -1,0 +1,1108 @@
+## 1209-azure-資源清理
+
+update:
+
+#### 211016
+
+* Richart-event 系統碟由 P4 (161/月) 調整為 S4 (42/月)
+
+* StockfeelCampaign 系統碟由 P4 (161/月) 調整為 S4 (42/月)
+
+* StockfeelRedmine 系統碟由 E4 (66/月) 調整為 S4 (42/月)
+
+* Stockfeel-DataParserVPN 系統碟由 P4 (161/月) 調整為 S4 (42/月)
+
+* StockfeelVPNTaipeiHQ 系統碟由 P4 (161/月) 調整為 S4 (42/月)
+
+* StockfeelTest 系統碟由 P10(601/月) 調整為 E10(266/月), 另外加 S6(83/月) 的資料碟
+
+* StockfeelBusinessPortal 系統碟由 P4 (161/月) 調整為 S4 (42/月)
+
+#### 211014
+
+* CDP 廣告由 b2s 改為 b1ms
+
+#### 211009
+
+* 已移除不再使用的備份 (相關 VM 已不存在)
+
+* 調整行為資料庫排程 避免卡正式機要求
+
+#### 211006
+
+* CDP 廣告由 D2s v3 (2.9/h) 改為 b2s (1.3/h)
+
+* SFDataCalculate D4s v3 (5.8/h) 改為 D2s v3 (2.9/h)
+
+#### 211005
+
+* Richart-event 機器大小由 F2s (2.5/h) 調整為 B1s (0.3/h)
+
+#### 211003
+
+* 圖片 storage 已啟用存取時間追蹤, 將 30 天內未讀取的檔案移到 cool storage
+
+> ref [Optionally enable access time tracking](https://docs.microsoft.com/en-us/azure/storage/blobs/lifecycle-management-policy-configure?tabs=azure-portal#optionally-enable-access-time-tracking)
+
+* 已刪除不使用的網路安全組及虛擬網路
+
+* 已刪除過去 30 天無任何資料傳輸的應用服務
+
+* 已刪除未使用的網路接口及公共 IP
+
+* 因 nomura 相關資源已不再使用, 已移除 app service 及相關 SQL Server
+
+* 因不使用的磁碟仍需付費 已將它們刪除
+
+> ref [Unattached Azure Disk Cost](https://social.msdn.microsoft.com/Forums/en-US/90ed871f-6d05-4237-bd19-b9aca5d3b80b/unattached-azure-disk-cost?forum=AzureDiskEncryption)
+
+
+
+## 1249-重建資料庫備份機制
+
+memo
+
+### 行為資料庫按月備份位置
+
+https://drive.google.com/drive/folders/1CdaZg53RiaQZ15biiN-317XJFR97EXUs
+
+### 批次刪除各 collection
+
+        db.getCollectionNames().forEach(function (key) {
+          if (key != 'system.profile') {
+            var bulk = db.getCollection(key).initializeUnorderedBulkOp();
+            bulk.find({ created_ts: {$lt: '2019-10-01'} }).remove();
+            bulk.execute();
+          }
+        })
+
+### 顯示目前各 collection 佔用容量的 mongo query
+
+        db.getCollectionNames()
+          .reduce(function (obj, key) {
+          	var sizeDesc = ['', ' KB', ' MB', ' GB'];
+            var val = db[key].stats().size;
+            var idx = 0;
+            var tmp = val;
+            while (tmp > 1024) { tmp = tmp / 1024; idx++; }
+            obj[key] = Math.round(tmp*100)/100 + sizeDesc[idx];
+        
+            obj.total += val;
+            idx = 0; tmp = obj.total;
+            while (tmp > 1024) { tmp = tmp / 1024; idx++; }
+            obj.total_GB = Math.round(tmp*100)/100 + sizeDesc[idx];
+            return obj;
+          }, {total: 0, total_GB: ''})
+
+### 目前完成 shell
+
+* backup_all_campaign_db.sh
+> 所有 campaign 機器上的 DB
+
+* backup_article_recommendation.sh
+> 文章推薦資料庫
+
+* backup_collaboration_cronjob.sh
+> 股票資料排程資料庫
+
+* backup_findata.sh
+> MongoDB findata
+
+* backup_stockfeel_cdp.sh
+> 廣告資料庫
+
+* backup_stockfeel_db.sh
+> 主站 wordpress DB
+
+* backup_stockfeel_member.sh
+> 會員資料庫
+
+* backup_stockfeel_project_biz.sh
+> 專案管理 biz
+
+* backup_stockfeel_project_living.sh
+> 專案管理 living
+
+* backup_user_behavior-questionnaire_statistics.sh
+> MongoDB user_behavior.questionnaire_statistics
+
+* backup_user_behavior_monthly.sh
+> MongoDB user_behavior
+
+### 預計排程設定
+
+* 每日備份
+
+    * 主站 wordpress, 
+
+    * 會員資料庫
+
+    * 專案管理 biz/living
+
+* 每週備份
+
+    * 文章推薦
+
+    * campaign
+
+* 每月備份
+
+    * findata (為了留存 schema)
+
+    * collaboration_cronjob (為了留存 schema)
+
+    * MongoDB user_behavior 前一個月的
+
+
+
+
+## 1038-編輯系統文章頁相關作業
+
+已確認：
+> * 作者頁 URL 為原 wordpress 新增作者時的帳號欄位
+> * 但後台介面有設定主題包相關個股 及個股相關文章
+> * 分類 可多選
+> * 作者或譯者 會被抓來當作者名稱, 會存在 meta 的 custom_author 及 custom_author_type, 參見頁面 [www.stockfeel.com.tw/robobrain─像google引擎的機器人知識庫/](https://www.stockfeel.com.tw/robobrain%E2%94%80%E5%83%8Fgoogle%E5%BC%95%E6%93%8E%E7%9A%84%E6%A9%9F%E5%99%A8%E4%BA%BA%E7%9F%A5%E8%AD%98%E5%BA%AB/)
+> * 文章
+> > * 新增: 使用 wp_insert_post, ex:
+```
+global $coauthors_plus;
+// 文章的新增
+// 影片連結需在獨立的一行
+$new_post = array(
+    'post_title'   => 'test post',
+    'post_content' => 'test content
+    https://www.youtube.com/watch?v=gNDqW4Sx3j8
+    https://youtu.be/gNDqW4Sx3j8',
+    'post_status'  => 'publish',
+    'post_author'  => 255,
+    'post_type'    => 'post',
+    // 要加入 postmeta 的值
+    'meta_input'   => array(
+        'custom_author' => '盧紀安',
+        'custom_article_source' => '盧紀安',
+        'custom_image_source' => '盧紀安'
+    )
+);
+// 若修改成功則 $res 會是新增的文章 id
+$res = wp_insert_post( $new_post, true );
+if (is_wp_error($res)) {
+    echo 'error';
+} else if (is_int($res)) {
+    echo 'success';
+    // 新增後需呼叫 coauthor plus 方法更新作者
+    $coauthors_plus->add_coauthors($res, array('luchian'));
+}
+// 呼叫此 filter 會觸發 wordpress 處理文章內容的機制
+// 例如將影片連結轉為對應的 embed 語法
+apply_filters( 'the_content', $content );
+```
+> > * 更新：一樣使用 wp_insert_post, 但多帶 'ID'
+> > * 文章列表頁縮圖 attachment (thumbnail / featured image)：可由圖片 url 新增並設定給文章如下
+```
+    $post_id = 132304;
+    $testGuid = 'https://images.stockfeel.com.tw/stockfeelimage/screenshot/searchGraph/shot_聯發科.png';
+    function getOrCreateAttachmentID ($guid) {
+        global $wpdb;
+        global $azure_blob_url;
+        $attach_id = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid=%s", $guid ) );
+        if ($attach_id == null) {
+            $filepath = str_replace($azure_blob_url, '', $guid);
+            // Prepare an array of post data for the attachment.
+            $attachment = array(
+                'guid'           => $guid,
+                'post_mime_type' => wp_check_filetype( basename( $guid ), null )['type'],
+                'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $guid ) ),
+                'post_content'   => '',
+                'post_status'    => 'inherit'
+            );
+            // Insert the attachment.
+            $attach_id = wp_insert_attachment( $attachment, $filepath );
+            $attach_data = wp_generate_attachment_metadata( $attach_id, $filepath );
+            $res1= wp_update_attachment_metadata( $attach_id, $attach_data );
+        }
+        return (int)$attach_id;
+    }
+    $attachment_id = getOrCreateAttachmentID($testGuid);
+    set_post_thumbnail($post_id, $attachment_id);
+```
+> > * 文章頁上方大圖：同上面縮圖一樣的方式建立 attachment 後設置 meta 如下
+```
+    update_post_meta($post_id, "post_secondary-image_thumbnail_id", $attachment_id);
+```
+> * yoast seo 項目：
+> > * 代稱：posts 中的 post_name (encodeURIComponent 過的), 修改方式 `wp_update_post( array(
+    'ID' => $post_id,
+    'post_name' => 'aa-bb-cc-dd'
+) );`
+> > * Meta 描述：post_meta 中 meta_key = _yoast_wpseo_metadesc, 修改方式 `update_post_meta( $post_id, '_yoast_wpseo_metadesc', 'SEO Meta Descr' );`
+> > * 焦點關鍵字：post_meta 中 meta_key = _yoast_wpseo_focuskw, 修改方式 `update_post_meta( $post_id, '_yoast_wpseo_focuskw', 'keyword1 keyword2' );`
+> > * 主要分類：存在 postmeta 中的 _yoast_wpseo_primary_category, 值為 term_id，若有分類就一定會有，當只有一個時自動帶那一個，當有多個時出現 "設為主要分類" 的選項
+> * 更新標籤或分類的資料
+> > * 新增分類
+```
+$cat_id = wp_insert_category(array( 'cat_name'=>$_POST['name'], 'category_nicename'=>$_POST['slug'],
+            'category_description'=>$_POST['description'], 'category_parent'=>$_POST['parent'] ) );
+```
+> > * 更新大部份可用 `wp_update_term($term_id, 'post_tag', array(
+	'term_order'=>88,
+	'name'=>'qqq-name',
+	'slug'=>'qqq-slug',
+	'description'=>'qqq-description',
+	'parent'=>1992
+));`
+> > * 刪除標籤 `wp_delete_term($id, 'post_tag');`
+> > * 刪除分類 `wp_delete_category($id);`
+> > * 圖片部份見以下 "標籤或分類的圖片"
+> > * 順序的部份需直接排序後更新 wordpress 資料庫，例如以下片段為將標籤依字串比對結果排序
+ ```
+	$tags = get_tags(array('hide_empty'=>false));
+	usort($tags, function ($tag1, $tag2) {
+		return strcmp(
+			iconv('utf-8', 'ascii//TRANSLIT', $tag1->name),
+			iconv('utf-8', 'ascii//TRANSLIT', $tag2->name)
+		);
+	});
+	$order = 1;
+	foreach ($tags as $tag) {
+		$id = $tag->term_id;
+		$wpdb->query( $wpdb->prepare(
+			"UPDATE $wpdb->terms SET term_order = '%d' WHERE term_id ='%d'",
+			$order, $id
+		) );
+		$wpdb->query( $wpdb->prepare(
+			"UPDATE $wpdb->term_relationships SET term_order = '%d' WHERE term_taxonomy_id ='%d'",
+			$order, $id
+		) );
+		$order++;
+	}
+```
+> * 標籤或分類的圖片
+> > * 與主題包圖片是不同的機制
+> > * 使用的外掛 categories-images
+> > * 取得圖檔 url: `z_taxonomy_image_url( $term_id )`
+> > * 新增或修改圖檔 url: 沒有提供方法，查原始碼後確認可用方法為 `update_option('z_taxonomy_image'.$term_id, 'https://images.stockfeel.com.tw/portfolioimage/dm_project-foodstuff-tw.jpg', false);`
+> > * 目前使用在主站 functions 中的方法 industrychain_topic
+> * 關於主題包
+> > * 主題包頁出現的文章應該是用 標籤 串的
+> > * 個股頁的兩篇介紹文，資料存在 collaboration_cronjob 資料庫，台股的部份存在 stockmeta_tw table, meta_key 為 introduction_post_id 及 financial_post_id，meta_value 為文章 id
+```
+mysql> use collaboration_cronjob;
+Database changed
+mysql> select * from stockmeta_tw where stock=1229 and (meta_key='introduction_post_id' or meta_key='financial_post_id');
++----------+-------+----------------------+------------+---------------------+
+| id       | stock | meta_key             | meta_value | created_ts          |
++----------+-------+----------------------+------------+---------------------+
+| 11790188 | 1229  | introduction_post_id | 85905      | 2021-03-07 08:00:41 |
+| 11790189 | 1229  | financial_post_id    | 85906      | 2021-03-07 08:00:41 |
++----------+-------+----------------------+------------+---------------------+
+2 rows in set (0.00 sec)
+```
+
+新增作者彈窗 需增加原舊後台作者頁 url (使用帳號) 欄位? 原帳號限英數字如 36kr 
+> 會再補欄位
+
+需要較詳細的上稿頁說明，主要是 menu 結構跟動線等
+> 會再補
+
+上稿頁標籤的位置 （目前找不到）
+> 預計另加欄位
+
+上稿頁文章分類是否多選 （原 wordpress 是多選）
+> 維持多選
+
+承上，若需要多選，主要分類的設置方式 （畫面上如何顯示與操作）
+> 設成文張頁綠色標籤
+
+有需要做到 新編輯後台上的文章 能在原 wordpress 後台修改嗎? 還是只需要能在文章頁正常顯示
+> 應該是不用
+
+能不能將目前完成的部份先合併回去，若將來有要加新功能可以直接加在新後台
+> 先不合併
+
+譯者
+> 需保留 介面再調
+
+
+
+memo
+
+取字詞轉換對照一個可能的流程是
+
+        1. 先只做單純的簡體字轉繁體字, 不做用詞的改變
+        2. 然後將 1 轉換後的結果存一份 [A]
+        3. 將 A 做用詞的轉換, 得到另一份 [B]
+        4. 比對 [A] [B], 尋找 "五個字 (含)" 以上的相同字串,
+          每找到一個就用該字串 split A/B 為子字串的陣列
+          持續重覆在所有子字串裡做一樣的事
+          直到找不到為止
+        5. 依續比對 A/B 每一個陣列, 重覆 4 做的事情,
+          只是將長度限制由五個字縮減為二個字
+        6. 最後所有 A/B 的子陣列依續即為轉換詞的對應
+
+在 4 裡用五個字, 是因為怕一開始就有轉換前後相異的詞但包含通常用字詞
+  例如 信息 就有可能被誤刪, 之後就比對不到 信息/資訊
+在 5 用二個字 是因為那時剩下的子字串陣列應該都夠短, 應該不用擔心受常用字詞干擾
+
+找最大共同字串的 python 實作可參考
+
+https://stackoverflow.com/a/58767435/1042731
+
+https://stackoverflow.com/a/2894073/1042731
+
+
+
+#### [Demo 頁面](https://bendev.stfldev.com/tmp/test/findTextMapping/test.html)
+
+JS Code
+
+          // let commonSub = longestCommonSubstring(s2t, s2twp);
+          console.log({ s2t, s2twp });
+          let s2tSrcArr = [s2t];
+          let s2twpSrcArr = [s2twp];
+          let s2tDistArr = [];
+          let s2twpDistArr = [];
+          let wordsMapping = {};
+
+          while (s2tSrcArr.length && s2twpSrcArr.length) {
+            // 取陣列中第一個
+            let s2tFirst = s2tSrcArr[0];
+            let s2twpFirst = s2twpSrcArr[0];
+
+            // 找共同子字串
+            let commonSub = longestCommonSubstring(s2tFirst, s2twpFirst);
+            commonSub = commonSub.trim();
+
+            // 有找到
+            if (commonSub && commonSub.length > 5) {
+              // 將第一個字串以找到的共同子字串分割
+              let s2tTmpArr = s2tFirst.split(commonSub);
+              let s2twpTmpArr = s2twpFirst.split(commonSub);
+
+              // 將第一個元素置換為分割後的後半截
+              s2tSrcArr[0] = s2tTmpArr[1] || '';
+              s2twpSrcArr[0] = s2twpTmpArr[1] || '';
+
+              // 將分割後的前半截塞回開頭
+              s2tSrcArr.unshift(s2tTmpArr[0]);
+              s2twpSrcArr.unshift(s2twpTmpArr[0]);
+            } else {
+              // 沒找到, 視為已處理完
+              // 將第一個元素移往 dist
+              s2tDistArr.push(s2tSrcArr.shift());
+              s2twpDistArr.push(s2twpSrcArr.shift());
+            }
+          }
+
+          for (let i = 0; i < s2tDistArr.length; i++) {
+            let from = s2tDistArr[i];
+            let to = s2twpDistArr[i];
+            if (!from || !to) continue;
+
+            let commonSub = longestCommonSubstring(from, to);
+            commonSub = commonSub.trim();
+
+            while (commonSub && commonSub.length >= 2) {
+              from = from.replace(commonSub, '');
+              to = to.replace(commonSub, '');
+              commonSub = longestCommonSubstring(from, to);
+              commonSub = commonSub.trim()
+            }
+            wordsMapping[from] = to;
+          }
+          
+          function longestCommonSubstring(string1, string2) {
+            // Convert strings to arrays to treat unicode symbols length correctly.
+            // For example:
+            // '𐌵'.length === 2
+            // [...'𐌵'].length === 1
+            const s1 = [...string1];
+            const s2 = [...string2];
+
+            // Init the matrix of all substring lengths to use Dynamic Programming approach.
+            const substringMatrix = Array(s2.length + 1)
+              .fill(null)
+              .map(() => {
+                return Array(s1.length + 1).fill(null);
+              });
+
+            // Fill the first row and first column with zeros to provide initial values.
+            for (let columnIndex = 0; columnIndex <= s1.length; columnIndex += 1) {
+              substringMatrix[0][columnIndex] = 0;
+            }
+
+            for (let rowIndex = 0; rowIndex <= s2.length; rowIndex += 1) {
+              substringMatrix[rowIndex][0] = 0;
+            }
+
+            // Build the matrix of all substring lengths to use Dynamic Programming approach.
+            let longestSubstringLength = 0;
+            let longestSubstringColumn = 0;
+            let longestSubstringRow = 0;
+
+            for (let rowIndex = 1; rowIndex <= s2.length; rowIndex += 1) {
+              for (
+                let columnIndex = 1;
+                columnIndex <= s1.length;
+                columnIndex += 1
+              ) {
+                if (s1[columnIndex - 1] === s2[rowIndex - 1]) {
+                  substringMatrix[rowIndex][columnIndex] =
+                    substringMatrix[rowIndex - 1][columnIndex - 1] + 1;
+                } else {
+                  substringMatrix[rowIndex][columnIndex] = 0;
+                }
+
+                // Try to find the biggest length of all common substring lengths
+                // and to memorize its last character position (indices)
+                if (
+                  substringMatrix[rowIndex][columnIndex] > longestSubstringLength
+                ) {
+                  longestSubstringLength = substringMatrix[rowIndex][columnIndex];
+                  longestSubstringColumn = columnIndex;
+                  longestSubstringRow = rowIndex;
+                }
+              }
+            }
+
+            if (longestSubstringLength === 0) {
+              // Longest common substring has not been found.
+              return "";
+            }
+
+            // Detect the longest substring from the matrix.
+            let longestSubstring = "";
+
+            while (
+              substringMatrix[longestSubstringRow][longestSubstringColumn] > 0
+            ) {
+              longestSubstring = s1[longestSubstringColumn - 1] + longestSubstring;
+              longestSubstringRow -= 1;
+              longestSubstringColumn -= 1;
+            }
+
+            return longestSubstring;
+          }
+
+          console.log({s2tDistArr, s2twpDistArr});
+
+          document.querySelector('.s2tSrc').value = s2t;
+          document.querySelector('.s2twpSrc').value = s2twp;
+          document.querySelector('.s2tDist').value =
+            '["'+s2tDistArr.join('", "')+'"]';
+          document.querySelector('.s2twpDist').value = 
+            '["'+s2twpDistArr.join('", "')+'"]';
+          document.querySelector('.wordsMapping').value = JSON.stringify(wordsMapping);
+
+
+
+
+
+## 974-編輯後台-init
+
+memo php <-> nodejs 權限控管流程
+
+- token 的生成
+> 當 php 頁面連入 editors home 時
+> php 端當下生成一個前端頁面 reference token 寫入 session
+> 再生成一個 api token
+> 由 設定檔 取自身的 secret key 加上 api token
+> 對 user id (目前為 email) 加密
+> 並將 api token, 加密結果 及 reference token 以 JSON post 到 nodejs 端
+> 也將 reference token 生成到前端的 view 中
+
+- 前端對 token 的取用
+> 當 前端頁面 打 nodejs 端 API 時帶上 reference token
+> nodejs 端若要打 PHP 端 api
+> 則以該 reference token 帶之前存下的 api token 及 加密結果打 PHP api
+
+- 對 token 的驗証
+> PHP 端接到 nodejs 端的 request 時
+> 取出 api token 及 加密結果
+> 由 設定檔 取自身的 secret key 加上 api token
+> 對加密結果進行解密
+> 若能成功解密即信賴該 request
+> 處理請求後回應
+
+- 對 token 的更新
+> 在每一分鐘自動儲存
+> 或每十分鐘狀態確認時
+> 即以同一 reference token 
+> 重新生成 api token 更新到 nodejs 端
+
+- token 的失效
+> 當使用者登出時，
+> php 端即通知 nodejs 端棄用對應的 reference token
+> nodejs 端每次收到 request 時也檢查半小時內有沒有更新過
+> 若沒有則棄用並回應前端需重新取 token
+> nodejs 端本身也起一個 interval task
+> 每隔一小時將所有超過半小時未更新的 reference token 棄用
+
+- token 的重新取得
+> 當前端打 nodejs api 時，
+> 若 nodejs 端發現所帶的 reference token 已被棄用
+> 則回應 api 失敗，並要求前端導回到 editors home
+> 並帶重新取得 token 的參數
+> php 端發現該參數時即重發前端 reference token 及 nodejs 端 api token
+
+- 安權性的保障點：
+> 1. PHP 端持有僅伺服器端該專案內存取的 secret key
+> 2. nodejs 端持有僅限該 session 存活時有效的 api token
+> 3. 前端頁面僅持有 reference token 且隨著 session 失效，未定期更新也失效
+
+
+
+## 1347-過去研究項目匯整
+
+##### 期間：2020-12-24 ~ 2021-10-21
+
+##### 研究項目 : 約 20 項
+
+##### 實際耗時 : 總共 82.5 小時, 約兩週多
+
+* 研究舊資料庫 (7.0h)
+
+    * 動機
+
+    > 此為編輯系統相關作業, 研究原 wordpress 資料庫, 了解各 table 及欄位
+
+    * 成果
+
+    > 1. 編輯系統得以進行資料同步及開發
+
+    > 2. 可在昌儒或仲凱需要持提供如何存取資料等相關協助
+
+* 985 通知中心 前端研究 閱覽計數 (2.0h)
+
+    * 動機
+
+    > 此為另一個人進行開發的部份, 為了加功能而先研究
+
+    * 成果
+
+    > 順利進行後續功能開發
+
+* 改刪除使用者 研究 wordpress (1.0h)
+
+    * 動機
+
+    > 開發功能需要, 因 wordpress 文章與作者的綁定有些複雜
+
+    * 成果
+
+    > 後續功能開發完成, 及日後曄暐發現後台問題時的協助排查
+
+* 搜尋圖譜截圖研究 (3.5h)
+
+    * 動機
+
+    > 此為新版首頁需要, 搜尋圖譜截圖
+
+    * 成果
+
+    > 1. 後續完成搜尋圖譜截圖工具
+
+    > 2. 後續研伸, 完成 Azure 圖檔自動壓縮工具, 減少圖檔大小約 40%
+
+* 研究標籤資料庫 (1.0h)
+
+* 研究 文章 分類 標籤 相關資料與方法及同步資料 (7.0h)
+
+* 研究文章 分類 標籤，加入上稿頁 ckeditor (6.0h)
+
+    * 動機
+
+    > 以上三項為編輯系統標籤管理相關需要
+
+    * 成果
+
+    > 1. 後續標籤管理完成開發
+
+    > 2. 可在昌儒或仲凱需要持提供如何存取資料等相關協助
+
+    * 備註
+
+    > 含開發時間, 實際研究時間約佔 1/3
+
+* 研究文章縮圖及首圖，graphql (7.0h)
+
+    * 動機
+
+    > 此為編輯系統開發需要
+
+    * 成果
+
+    > 1. 後續完成文章資料相關 API
+
+    > 2. 在轉換網站分類結構後, 用 graphql 查回新舊類別對照
+
+* 串文章資料 研究 yoastseo js (7.0h)
+
+* 整入 yoastseo.js, 整理相依 (1.0h)
+
+* 研究 yoastseo worker (1.5h)
+
+    * 動機
+
+    > 以上三項為編輯系統文章頁功能需要 SEO 評分
+
+    * 成果
+
+    > 將 yoastseo 套件引入專案
+
+    * 備註
+
+    > 含開發時間, 實際研究時間約 65%
+
+* 研究文章版本，測試 (1.0h)
+
+    * 動機
+
+    > 開發編輯系統需要, 研究 wordpress 文章版本的儲存與比對方式
+
+    * 成果
+
+    > 相關功能的初步分析設計
+
+* 數據洞查會議，頁面建立，線圖元件，研究套件 (4.0h)
+
+    *  動機
+
+    > 達成需要的頁面呈現效果
+
+    * 成果
+
+    > 後續完成數據洞查頁面
+
+    * 備註
+
+    > 含開會及開發, 實際研究時間約 30%
+
+* 研究 CSS 截取方法 (3.0h)
+
+    * 動機
+
+    > 改善 page speed 需要, 截取需要使用的 css rule
+
+    * 成果
+
+    > 完成截取需要的 css rule 的方法, 改善 page speed
+
+* 研究 page speed (1.5h)
+
+    * 動機
+
+    > 了解可能的改善方法, 改善 page speed
+
+    * 成果
+
+    > 改善 page speed
+
+* 研究 webpack file loader 設定 (1.0h)
+
+    * 動機
+
+    > 外包前端專案編譯需要
+
+    * 成果
+
+    > 成功編譯建置
+
+* 研究網頁畫線 (1.0h)
+
+    * 動機
+
+    > 文章 highlight 功能初步研究
+
+    * 成果
+
+    > 有初步開發構想
+
+* 研究多程序同步問題 (1.0h)
+
+* 研究跨程序同步 (1.5h)
+
+    *  動機
+
+    > 編輯系統需要管理多人同時操作
+
+    * 成果
+
+    > 完成後續同步與鎖定機制
+
+* 研究 azure 資源與操作 (2.0h)
+
+* Azure 服務調整研究 (0.5h)
+
+    * 動機
+
+    > 以上二項為了能進行 Azure 管理 (過去無經驗)
+
+    * 成果
+
+    > 1. 可進行 Azure 管理
+
+    > 2. 後續移除數十項不需使用的資源, 減省開支
+
+* 研究 azure storage (1.0h)
+
+* 研究 nodejs 取 stockfeelimage 圖檔資訊 (2.0h)
+
+    * 動機
+
+    > 以上二項為了實現 Azure 圖檔自動壓縮
+
+    * 成果
+
+    > Azure 圖檔自動壓縮程式
+
+* 研究 Azure App Service (3.0h)
+
+    * 動機
+
+    > 更好的管理 App Service
+
+    * 成果
+
+    > 後續清理將 App Service 費用由 10,257 減為 6,255
+
+* 研究 php critical section (0.5h)
+
+* 研究 wordpress 文章快取 (1.0h)
+
+    * 動機
+
+    > 減少 Query, 加快回應, 節省流量
+
+    * 成果
+
+    > 1. 大幅減少 DB Query, DB 機器 CPU 用量
+
+    > 2. 大幅減少對 API 的查詢量
+
+    > 3. 後續 Page Speed 由原本最高不到 30 分到可達 40 分以上
+
+* 研究 VUE 動態參數 (1.0h)
+
+* 構思功能流程 研究討論切詞做法 /w 昌儒 (1.0h)
+
+* 研究 Vue 元件限制 (2.0h)
+
+    * 動機
+
+    > 以上三項為編輯系統 字詞替換功能需要
+
+    * 成果
+
+    > 開發字詞替換功能
+
+* 確認 研究 調整快取規則 (1.5h)
+
+* 研究快取設定 (1.0h)
+
+    * 動機
+
+    > 以上二項為 Cloudflare 相關, 主要為了減少伺服器負載
+
+    * 成果
+
+    > 1. 主站 Requests 及資料流量減半
+
+    > 2. 文章地圖 API Request 數降為 10%
+
+    > 3. 每月流量費用由 4027 減為 1533
+
+* 文章上稿 編輯後台端 研究 MySQL 欄位型態及限制 (1.0h)
+
+    * 動機
+
+    > 此為暫存功能需要, 研究可如何儲存相關資料
+
+    * 成果
+
+    > 相關功能初步分析設計
+
+* 研究 Azure VM 類型差異 (3.0h)
+
+    * 動機
+
+    > 將各 VM 調整為適合的類型
+
+    * 成果
+
+    > 後續多台 VM 調整, 費用由 33,796 減為 26,856
+
+* 研究 Azure 保留及備份 (2.0h)
+
+    * 動機
+
+    > 節省花費及廣告正式機移機
+
+    * 成果
+
+    > 1. 廣告正式機移機
+
+    > 2. 進行中的 RI 方案調整
+
+
+## 效能優化
+
+```
+db.getCollection('search_behavior').aggregate([
+    {
+        '$match': {
+            'keywords': { '$not': {'$size': 0 } },
+            'created_ts': { '$gte': '2021-09-01' },
+            // 過濾 sfct_cookie_id 要是 sftrack_ 開頭
+            '$expr': {
+                '$eq': [{ '$indexOfCP': [ '$sfct_cookie_id', 'sftrack_' ] }, 0]
+            }
+        }
+    },
+    // 先用 cookie id 和 search value 做一次 group, 合併同一 cookie id 的多次搜尋
+    {
+        '$group': {
+            '_id': {
+                'sfct_cookie_id': '$sfct_cookie_id',
+                'searchvalue': '$searchvalue'
+            },
+            'sfct_cookie_id': { '$first': '$sfct_cookie_id' },
+            'searchvalue': { '$first': '$searchvalue' }
+        }
+    },
+    // 再用 search value 做一次 group 取 count
+    {
+        '$group': {
+            '_id': {
+                'searchvalue': '$searchvalue'
+            },
+            'searchvalue': { $first: '$searchvalue' },
+            'count': { '$sum': 1 }
+        }
+    },
+    // 用 count 由大到小排序
+    { '$sort': { 'count': -1 } },
+    // 只保留需要使用的 field
+    { $project: { '_id': '$searchvalue', 'searchvalue': 1, 'count': 1 } },
+    // 留最多 count 的前十筆
+    { '$limit': 10 },
+    { '$unwind': '$searchvalue' }
+])
+```
+
+* 原本的很慢要 30 秒左右
+```
+SELECT ID as post_id FROM wp35_posts WHERE post_status = 'publish' AND (post_content regexp '^https://youtu.be' OR post_content regexp '^<p style="text-align: center;"><iframe src="//www.youtube.com/embed');
+```
+
+* 改成像下面這樣就不用一秒
+```
+SELECT tmp.post_id FROM (SELECT ID as post_id, substr(post_content, 1, 100) as cnt FROM wp35_posts WHERE post_status = 'publish') tmp WHERE tmp.cnt LIKE 'https://youtu.be%' OR tmp.cnt LIKE '<p style="text-align: center;"><iframe src="//www.youtube.com/embed%';
+```
+
+## 1334-專題圖檔重新上傳
+
+```
+Array.from(document.querySelectorAll('img'))
+  .filter(e=>{
+    return e.src.includes('data:')
+  }).forEach(e=>{
+    let src = e.src;
+    let base64Length = src.length - (src.indexOf(',') + 1);
+    let padding = (src.charAt(src.length - 2) === '=') ? 2 : ((src.charAt(src.length - 1) === '=') ? 1 : 0);
+    let fileSize = base64Length * 0.75 - padding;
+    let base64str = src.split('base64,')[1];
+    if (fileSize/1024 > 300) {
+      console.log(e);
+      console.log(fileSize/1024+' KB');
+    }
+  });
+```
+
+## 依位置判斷點擊對像
+
+```
+function isClickedOn (evt, ele) {
+  let x = evt.clientX; //x position
+  let y = evt.clientY;  //y position
+  let rect = ele.getBoundingClientRect();
+  return (x > rect.x && x < rect.x + rect.width) && (y > rect.y && y < rect.y + rect.height)
+}
+
+document.body.addEventListener('click', function (e) {
+  let domToCheck = document.querySelector('.article.article-1');
+  console.log( isClickedOn( e, domToCheck ) );
+});
+```
+
+## 實用命令
+
+* 找最大的五個目錄 (含自己) 
+
+> `sudo du -a /var/www/ | sort -n -r | head -n 5`
+
+
+## 主站每日確認項目
+
+* Cloudflare 確認項目
+
+> [Cloudflare 防火牆事件](https://dash.cloudflare.com/12d42da4866570ddd0cb6a7dc86cfee4/stockfeel.com.tw/firewall?time-window=360)，若發現有大量事件再進一步排查。
+
+> [Cloudflare Request 狀況](https://dash.cloudflare.com/12d42da4866570ddd0cb6a7dc86cfee4/stockfeel.com.tw/caching?time-window=360)，若有發現 Served by Origin 的比例過高則可能表示有東西該加快取設定，再進一步排查。
+
+> [Cloudflare Traffic 狀況](https://dash.cloudflare.com/12d42da4866570ddd0cb6a7dc86cfee4/stockfeel.com.tw/caching?time-window=360)，若有發現 Served by Origin 的比例過高或有突波的狀況，則表示可能有東西 size 過大，[如之前的專題圖檔過大問題](https://trello.com/c/XdnmTngV/1334-%E5%B0%88%E9%A1%8C%E5%9C%96%E6%AA%94%E9%87%8D%E6%96%B0%E4%B8%8A%E5%82%B3)，再進一步排查調整。
+
+* [stockfeel-ap](https://portal.azure.com/#@stockfeelazure.onmicrosoft.com/resource/subscriptions/1bc55e17-db8f-496f-a9e1-59c1726e5bf1/resourceGroups/stockfeel-web/providers/Microsoft.Web/sites/stockfeel-ap/appServices) 確認項目
+
+> [HTTP 5xx](https://portal.azure.com/#blade/Microsoft_Azure_MonitoringMetrics/Metrics.ReactView/ResourceId/%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap/TimeContext/%7B%22options%22%3A%7B%22grain%22%3A2%7D%2C%22relative%22%3A%7B%22duration%22%3A3600000%7D%7D/Chart/%7B%22metrics%22%3A%5B%7B%22resourceMetadata%22%3A%7B%22id%22%3A%22%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap%22%7D%2C%22name%22%3A%22Http5xx%22%2C%22aggregationType%22%3A1%2C%22metricVisualization%22%3A%7B%22displayName%22%3A%22Http%20Server%20Errors%22%2C%22resourceDisplayName%22%3A%22stockfeel-ap%22%7D%7D%5D%2C%22title%22%3A%22HTTP%205xx%22%2C%22titleKind%22%3A2%2C%22timespan%22%3A%7B%22relative%22%3A%7B%22duration%22%3A3600000%7D%2C%22grain%22%3A2%2C%22showUTCTime%22%3Afalse%7D%2C%22visualization%22%3A%7B%22chartType%22%3A2%7D%7D/openInEditMode/), 若有發現則設法找出對應的 URL 並處理，可能的方式有查看 Cloudflare 記錄或加 try/catch 寫 log 等
+
+> [Requests 總和](https://portal.azure.com/#blade/Microsoft_Azure_MonitoringMetrics/Metrics.ReactView/ResourceId/%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap/TimeContext/%7B%22options%22%3A%7B%22grain%22%3A2%7D%2C%22relative%22%3A%7B%22duration%22%3A3600000%7D%7D/Chart/%7B%22metrics%22%3A%5B%7B%22resourceMetadata%22%3A%7B%22id%22%3A%22%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap%22%7D%2C%22name%22%3A%22Requests%22%2C%22aggregationType%22%3A1%2C%22metricVisualization%22%3A%7B%22resourceDisplayName%22%3A%22stockfeel-ap%22%7D%7D%5D%2C%22title%22%3A%22%E8%A6%81%E6%B1%82%22%2C%22titleKind%22%3A2%2C%22timespan%22%3A%7B%22relative%22%3A%7B%22duration%22%3A3600000%7D%2C%22grain%22%3A2%2C%22showUTCTime%22%3Afalse%7D%2C%22visualization%22%3A%7B%22chartType%22%3A2%7D%7D/openInEditMode/)，若有明顯衝高則一併檢查 Cloudflare 防火牆，及確認是哪些 path，若是特定 path 再設法找出原因
+
+> [Data out](https://portal.azure.com/#blade/Microsoft_Azure_MonitoringMetrics/Metrics.ReactView/ResourceId/%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap/TimeContext/%7B%22options%22%3A%7B%22grain%22%3A2%7D%2C%22relative%22%3A%7B%22duration%22%3A3600000%7D%7D/Chart/%7B%22metrics%22%3A%5B%7B%22resourceMetadata%22%3A%7B%22id%22%3A%22%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap%22%7D%2C%22name%22%3A%22BytesSent%22%2C%22aggregationType%22%3A1%2C%22metricVisualization%22%3A%7B%22displayName%22%3A%22Data%20Out%22%2C%22resourceDisplayName%22%3A%22stockfeel-ap%22%7D%7D%5D%2C%22title%22%3A%22%E9%80%A3%E5%87%BA%E7%9A%84%E8%B3%87%E6%96%99%22%2C%22titleKind%22%3A2%2C%22timespan%22%3A%7B%22relative%22%3A%7B%22duration%22%3A3600000%7D%2C%22grain%22%3A2%2C%22showUTCTime%22%3Afalse%7D%2C%22visualization%22%3A%7B%22chartType%22%3A2%7D%7D/openInEditMode/)，若有明顯衝高再比對 requests，若 requests 正常再排查為何輸出量會大增
+
+> Data In 同 Data Out
+
+> [Response Time](https://portal.azure.com/#blade/Microsoft_Azure_MonitoringMetrics/Metrics.ReactView/ResourceId/%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap/TimeContext/%7B%22options%22%3A%7B%22grain%22%3A2%7D%2C%22relative%22%3A%7B%22duration%22%3A3600000%7D%7D/Chart/%7B%22metrics%22%3A%5B%7B%22resourceMetadata%22%3A%7B%22id%22%3A%22%2Fsubscriptions%2F1bc55e17-db8f-496f-a9e1-59c1726e5bf1%2FresourceGroups%2Fstockfeel-web%2Fproviders%2FMicrosoft.Web%2Fsites%2Fstockfeel-ap%22%7D%2C%22name%22%3A%22HttpResponseTime%22%2C%22aggregationType%22%3A4%2C%22metricVisualization%22%3A%7B%22displayName%22%3A%22Response%20Time%22%2C%22resourceDisplayName%22%3A%22stockfeel-ap%22%7D%7D%5D%2C%22title%22%3A%22%E5%9B%9E%E6%87%89%E6%99%82%E9%96%93%22%2C%22titleKind%22%3A2%2C%22timespan%22%3A%7B%22relative%22%3A%7B%22duration%22%3A3600000%7D%2C%22grain%22%3A2%2C%22showUTCTime%22%3Afalse%7D%2C%22visualization%22%3A%7B%22chartType%22%3A2%7D%7D/openInEditMode/)，若有衝高再排查，是 requests 太高，特定頁面或 API 效能問題或排程卡死其它機器影響到主站
+
+* 其它 VM 確認項目
+
+> 定期確認各 VM 的 CPU，Memory，Network，Disk 使用狀況，看是否需要調整或排查問題
+
+> 另也需定期檢查磁碟空間，若磁碟無空間會死機，空間快用完時需確認哪些能清理
+
+## Azure RI 購買建議
+
+```
+** 以下提到價格都以官網為主
+
+** 有些 "買加倍大的三年保留" 的部份, 購買前請通知先調整大小再做購買操作
+
+個人建議 :
+所有 B1s 的 VM 一律買三年保留,
+反正便宜, 依官網價格 0.1313/小時算一個月不到一百塊
+真的要升級就直接買更大的保留,
+原本的 B1s 看要拿去做測試機、POC (概念驗証) 機或跑一些小服務都好,
+很好調度
+除了 Richart-event
+這台不確定, 好像要看客戶是否續約
+
+SFDataCalculate
+行為資料庫
+這台現在是 D2s v3 (3.0594/h),
+建議升到 D4s v3 然後買三年保留 (2.5093/h),
+更便宜且應該可讓首頁載入速度更快更穩定,
+若其間 D4s v3 也不夠用要升級, 應該表示公司也大發利市了
+
+stockfeel-ads
+B1ms
+廣告正式機, 應該不太會變動, 建議可直接買三年保留
+
+Stockfeel-DataParserVPN
+B1s
+VPN, 應該也不太會變動,
+且也是狠便宜好調度的 B1s
+
+Stockfeel-DataResult
+B2ms
+股票資料排程及資料庫, 這台不太確定,
+或許也可比照行為資料庫機器的做法,
+買加倍大的 B4ms 的三年保留
+
+stockfeel-db
+D2s v3
+wordpress 資料庫, 目前還蠻輕鬆的,
+如果 PV 沒有變四五倍應該沒什麼問題,
+推薦可直接買三年保留
+
+
+stockfeel-fin-data
+B1ms
+一些 TEJ 或 eod 的金融資料,
+寫入主要是排程定期做,
+讀取量若大可加快取機制
+推薦可直接買三年保留, 
+
+Stockfeel-Graph2.0
+B4ms
+搜尋圖譜, 目前還算輕鬆,
+但變動可能性較大,
+不過還是推薦可買三年保留
+因為之後加的分析排程或 API 也不一定要放同一台
+放不下再加別台來放即可
+
+
+Stockfeel-GraphTest
+D2s v3
+同圖譜正式機, 測試機更沒關係
+
+
+StockfeelBusinessPortal
+工單系統, 超涼, 又是便宜的 B1s,
+可考慮直接買三年保留
+
+
+StockfeelCampaign
+外專機, 一樣建議三年保留
+放不下再加別台 Cloudflare DNS 連過去就好
+
+StockfeelMember
+會員機 B2ms
+推薦可買加倍大的三年保留
+
+StockfeelRedmine
+建議不要買, 因為元大專案完結可以刪
+
+StockfeelTest
+D2s v3
+測試機, 推薦買三年保留,
+不夠用再買一台即可
+
+StockfeelVPNTaipeiHQ
+VPN B1s
+一樣推薦三年保留
+
+```
+
+
+## 1267-股感網站－網站一些套件使用狀況
+
+除 Disqus 外應該是都有用到, 列出如下
+
+MathJax 2.7.2
+部份頁面呈現數學公式用
+
+D3 4.13.0
+各頁 SVG 繪圖用
+
+Highcharts 9.2.2
+線圖或長條圖等
+
+Disqus
+留言用, 應該是沒有實際在使用, 但不確定移除會有什麼影響
+
+Twitter Emoji (Twemoji)
+Wordpress 本身自帶的功能
+
+math.js
+跟 MathJax 一起的
+
+jQuery UI 1.12.1
+會員 dropdown, 各頁 datatable, tab 等
+
+jQuery1.12.4
+全站各頁用的 lib
+
+Google Font API
+Google 字形
+
+webpack
+npm/vue 主要打包工具
+
+Swiper Slider
+各個可划動區塊
+
+Gravatar
+Wordpress Author 頭像
+
+Choices
+Wordpress 本身的 Theme

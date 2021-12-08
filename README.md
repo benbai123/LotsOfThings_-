@@ -2,6 +2,9 @@
 
 所有分支的清單, 主要會以使用的語言當分類大項
 
+### AWS
+##### [AWS EC2 中使用 NodeJS 及 aws-sdk](https://github.com/benbai123/LotsOfThings_-/tree/aws_sdk_nodejs) - 在 AWS EC2 中以 NodeJS 使用其它服務的相關記錄
+
 ### Webpack
 #### Webpack 5 中使用 Vue 3 (2021)
 ##### [Webpack 5 Vue 3](https://github.com/benbai123/LotsOfThings_-/tree/webpack5_vue3)

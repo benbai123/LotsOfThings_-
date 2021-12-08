@@ -1,18 +1,57 @@
-# LotsOfThings_雜七雜八
-Repo for learn/practice lots of things quickly - 用來快速練習各種東西的 Repo
+## EC2 上使用 nodejs aws-sdk 的一些記錄
 
-### 簡介
-* Master 分支將不會有任何東西
-* 所有的東西獨立開一個分支存放
-* 每個分支只會有一個主要題目 - 簡單、清楚為最高原則
-* 各分支相關說明會在一個 [desc 分支](https://github.com/benbai123/LotsOfThings_-/tree/desc)
-* 會有很多雜七雜八的東西 - 前端、後端、系統、etc
-* 會有很多不同語言 - NodeJS、PHP、Java、Shell、etc
+### 安裝套件與測試
 
-### 為何這麼做
-* Master 沒有東西, 可以快速 Clone 專案
-* Check 各分支時只下載真的需要的部份
+##### 安裝套件
 
-### 歡迎參考/取用
+    npm install --save aws-sdk
+    npm install --save-dev jest
 
-### 也歡迎出題
+##### 執行測試
+
+`npm run test` 或者 `npm run test:watch`
+
+### 相關環境設置 (SSH 連線到 EC2 實體之後)
+
+##### EC2 config
+
+* `~/.aws/credentials`
+
+        [default]
+        aws_access_key_id=YOUR_ACCESS_KEY_ID
+        aws_secret_access_key=YOUR_SECRET_ACCESS_KEY
+
+* `~/.aws/config`
+
+        [default]
+        region=REGION_OF_YOUR_SERVICES
+        output=json
+
+##### 設置環境變數
+
+* 編輯 `~/.bash_profile`, 加入以下
+
+```
+export AWS_SDK_LOAD_CONFIG=1
+```
+
+* 執行 `source ~/.bash_profile` 讓它生效
+
+### 參考文件
+
+##### 關於環境設定
+
+* [Loading Credentials in Node.js using a Configured Credential Process](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-configured-credential-process.html)
+
+* [Loading Credentials in Node.js from the Shared Credentials File](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
+
+##### 關於 lambda
+
+* [Getting started with Lambda](https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html)
+
+* [Nodejs - Invoke an AWS.Lambda function from within another lambda function](https://stackoverflow.com/a/35795883/1042731)
+
+##### 關於 S3
+
+* [Upload a file to Amazon S3 with NodeJS](https://stackoverflow.com/a/28081647/1042731)
+

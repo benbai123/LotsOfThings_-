@@ -2,6 +2,10 @@
 
 所有分支的清單, 主要會以使用的語言當分類大項
 
+### 若想只單獨 Clone 特定分支可用以下命令
+
+        git clone -b [分支名稱] --single-branch https://github.com/benbai123/LotsOfThings_-.git
+
 ### AWS
 ##### [AWS EC2 中使用 NodeJS 及 aws-sdk](https://github.com/benbai123/LotsOfThings_-/tree/aws_sdk_nodejs) - 在 AWS EC2 中以 NodeJS 使用其它服務的相關記錄
 
@@ -31,7 +35,11 @@
 ##### [NodeJS Redis Publish–Subscribe](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_redis_pubsub) - NodeJS 使用 redis 實作 Publish–Subscribe Pattern
 
 #### 瀏覽器自動化
+
 ##### [NodeJS Selenium Getting Started](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_gettingstarted) - 在 NodeJS 下開始使用 Selenium
+
+##### [NodeJS Selenium Headless Text Mode](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_headless_text_mode) - 在 NodeJS 中以 Headless、無顯示器模式執行 Selenium
+
 ##### [NodeJS Selenium Commands Testing](https://github.com/benbai123/LotsOfThings_-/tree/nodejs_selenium_commands_testing) - 在 NodeJS 下使用 Selenium 的各種方法/命令
 
 ### PHP

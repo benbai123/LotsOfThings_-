@@ -7,6 +7,6 @@ function createEmployee(name, type) {
     case "engineer": return new Engineer(name, type);
     case "salesman": return new Salesman(name, type);
     case "manager": return new Manager(name, type);
+    default: throw new Error(`Employee cannot be of type ${type}`);
   }
-  return new Employee(name, type);
 }

@@ -1,4 +1,5 @@
 
 class Manager extends Employee {
-  get type() { return 'manager'; }
+  // toString 使用 name 及常值
+  toString() { return `${this._name} (manager)`; }
 }

@@ -1,15 +1,18 @@
 
 class Employee {
   constructor(name, type) {
-    this.validateType(type);
     this._name = name;
     this.type = type;
   }
 
-  // 為什麼驗證不移到 EmployeeType？
-  validateType(arg) {
-    if (!['engineer', 'manager', 'salesman'].includes(arg))
-      throw new Error(`Employee cannot be of type ${arg}`);
+  // 為什麼工廠方法不移到 EmployeeType？
+  static createEmployeeType(aString) {
+    switch(aString) {
+      case "engineer": return new Engineer();
+      case "manager": return new Manager();
+      case "salesman": return new Salesman();
+      default: throw new Error(`Employee cannot be of type ${arg}`);
+    }
   }
 
   // 為什麼不用 get type() ?
@@ -21,7 +24,7 @@ class Employee {
   }
   // 疑問：不用 validate?
   set type(arg) {
-  	this._type = new EmployeeType(arg);
+  	this._type = Employee.createEmployeeType(arg);
   }
   // 疑問：首字大寫其它字應該不用轉小寫？
   get capitalizedType() {

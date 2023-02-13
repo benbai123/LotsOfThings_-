@@ -8,9 +8,6 @@ class Department extends Party {
   get staff() {
     return this._staff.slice();
   }
-  get name() {
-    return this._name;
-  }
 
   get totalMonthlyCost() {
     return this.staff

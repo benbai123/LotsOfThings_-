@@ -9,9 +9,6 @@ class Employee extends Party {
   get monthlyCost() {
     return this._monthlyCost;
   }
-  get name() {
-    return this._name;
-  }
   get id() {
     return this._id;
   }

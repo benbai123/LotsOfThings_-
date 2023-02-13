@@ -12,8 +12,4 @@ class Employee extends Party {
   get id() {
     return this._id;
   }
-
-  get annualCost() {
-    return this.monthlyCost * 12;
-  }
 }

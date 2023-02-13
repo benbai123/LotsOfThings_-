@@ -16,4 +16,7 @@ class Person {
   get isMale() {
     return 'M' === this._genderCode;
   }
+  get isFemale() {
+    return 'F' === this._genderCode;
+  }
 }

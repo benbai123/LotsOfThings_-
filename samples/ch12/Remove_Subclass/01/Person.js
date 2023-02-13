@@ -14,7 +14,6 @@ class Person {
   }
 
   get isMale() {
-    // 只是中間步驟，否則形成循環依賴
-    return this instanceof Male;
+    return 'M' === this._genderCode;
   }
 }

@@ -5,8 +5,10 @@ class PremiumBooking extends Booking {
     this._extras = extras;
   }
 
+  /** 呼叫 _bePremium 方法中建立的 delegate 的 getter
+   * */
   get hasTalkback() {
-    return this._show.hasOwnProperty('talkback');
+    return this._premiumDelegate.hasTalkback;
   }
 
   get basePrice() {

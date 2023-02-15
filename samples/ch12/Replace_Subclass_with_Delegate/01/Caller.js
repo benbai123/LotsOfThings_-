@@ -1,6 +1,14 @@
 
 // booking 使用方
-aBooking = new Booking(show, date);
+aBooking = createBooking(show, date);
 
 // premium booking 使用方
-aBooking = new PremiumBooking(show, date, extras);
+aBooking = createPremiumBooking(show, date, extras);
+
+function createBooking(show, date) {
+  return new Booking(show, date);
+}
+
+function createPremiumBooking(show, date, extras) {
+  return new PremiumBooking(show, date, extras);
+}

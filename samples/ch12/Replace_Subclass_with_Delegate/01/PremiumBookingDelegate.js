@@ -5,7 +5,7 @@ class PremiumBookingDelegate {
     this._extras = extras;
   }
 
-  // 存取 host (此時還是 PremiumBooking) 的 _show 屬性
+  // 此時沒有人會呼叫到此方法
   get hasTalkback() {
     return this._host._show.hasOwnProperty('talkback');
   }

@@ -9,4 +9,8 @@ class PremiumBookingDelegate {
   get hasTalkback() {
     return this._host._show.hasOwnProperty('talkback');
   }
+
+  get basePrice() {
+    return Math.round(this._host._privateBasePrice + this._extras.premiumFee);
+  }
 }

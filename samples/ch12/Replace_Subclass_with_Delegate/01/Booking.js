@@ -14,6 +14,14 @@ class Booking {
   }
 
   get basePrice() {
+    // 書中用三元運算
+    if (this._premiumDelegate) {
+      return this._premiumDelegate.basePrice;
+    }
+    return this._privateBasePrice;
+  }
+
+  get _privateBasePrice() {
     let result = this._show.price;
     if (this.isPeakDay) result += Math.round(result * 0.15);
     return result;

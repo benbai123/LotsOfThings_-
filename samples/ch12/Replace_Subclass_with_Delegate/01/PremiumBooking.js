@@ -7,9 +7,7 @@ class PremiumBooking extends Booking {
 
   // 刪除 hasTalkback
 
-  get basePrice() {
-    return Math.round(super.basePrice + this._extras.premiumFee);
-  }
+  // 刪除 basePrice
 
   get hasDinner() {
     return this._extras.hasOwnProperty('dinner') && !this.isPeakDay;

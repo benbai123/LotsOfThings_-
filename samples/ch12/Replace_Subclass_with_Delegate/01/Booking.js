@@ -6,6 +6,10 @@ class Booking {
   }
 
   get hasTalkback() {
+    // 書中用三元運算
+    if (this._premiumDelegate) {
+      return this._premiumDelegate.hasTalkback;
+    }
     return this._show.hasOwnProperty('talkback') && !this.isPeakDay;
   }
 

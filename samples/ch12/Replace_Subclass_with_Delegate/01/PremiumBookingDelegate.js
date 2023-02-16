@@ -9,4 +9,10 @@ class PremiumBookingDelegate {
   get hasTalkback() {
     return this._host._show.hasOwnProperty('talkback');
   }
+
+  // 擴展方法的版本就不需要 basePrice
+  
+  extendBasePrice(base) {
+    return Math.round(base + this._extras.premiumFee);
+  }
 }

@@ -16,8 +16,14 @@ class Booking {
   get basePrice() {
     let result = this._show.price;
     if (this.isPeakDay) result += Math.round(result * 0.15);
+    // 書中用三元運算
+    if (this._premiumDelegate) {
+      return this._premiumDelegate.extendBasePrice(result);
+    }
     return result;
   }
+
+  // 擴展方法的版本就不需要 _privateBasePrice
 
   /** 開頭使用底線表示不是公用介面
    * 如果目的是讓 booking 轉變成 premium booking

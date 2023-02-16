@@ -23,6 +23,13 @@ class Booking {
     return result;
   }
 
+  get hasDinner() {
+    if (this._premiumDelegate) {
+      return this._premiumDelegate.hasDinner;
+    }
+    return undefined;
+  }
+
   // 擴展方法的版本就不需要 _privateBasePrice
 
   /** 開頭使用底線表示不是公用介面

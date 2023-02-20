@@ -1,5 +1,5 @@
 
-class EuropeanSwallow {
+class EuropeanSwallowDelegate {
   get airSpeedVelocity() {
     return 35;
   }

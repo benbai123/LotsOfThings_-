@@ -1,7 +1,6 @@
 
-class AfricanSwallow {
+class AfricanSwallowDelegate {
   constructor(data) {
-    super(data);
     // 椰子！
     this._numberOfCoconuts = data.numberOfCoconuts;
   }

@@ -1,6 +1,7 @@
 
-class AfricanSwallowDelegate {
-  constructor(data) {
+class AfricanSwallowDelegate extends SpeciesDelegate {
+  constructor(data, bird) {
+    super(data, bird);
     // 椰子！
     this._numberOfCoconuts = data.numberOfCoconuts;
   }

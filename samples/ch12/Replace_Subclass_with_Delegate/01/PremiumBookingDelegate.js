@@ -1,5 +1,5 @@
 
-class PremiumBookingDelegate {
+class PremiumBookingDelegate extends BookingDelegate {
   constructor(hostBooking, extras) {
     this._hostBooking = hostBooking;
     this._extras = extras;
@@ -10,10 +10,12 @@ class PremiumBookingDelegate {
     return this._host._show.hasOwnProperty('talkback');
   }
 
-  // 擴展方法的版本就不需要 basePrice
-  
-  extendBasePrice(base) {
-    return Math.round(base + this._extras.premiumFee);
+  // Booking 將預設方法移到 delegate，可直接覆寫
+  get basePrice() {
+    let result = this._host._show.price;
+    if (this._host.isPeakDay) result += Math.round(result * 0.15);
+
+    return Math.round(result + this._extras.premiumFee);
   }
 
   get hasDinner() {

@@ -3,31 +3,20 @@ class Booking {
   constructor(show, date) {
     this._show = show;
     this._date = date;
+    this._premiumDelegate = new BookingDelegate(this, extras);
   }
 
   get hasTalkback() {
     // 書中用三元運算
-    if (this._premiumDelegate) {
-      return this._premiumDelegate.hasTalkback;
-    }
-    return this._show.hasOwnProperty('talkback') && !this.isPeakDay;
+    return this._premiumDelegate.hasTalkback;
   }
 
   get basePrice() {
-    let result = this._show.price;
-    if (this.isPeakDay) result += Math.round(result * 0.15);
-    // 書中用三元運算
-    if (this._premiumDelegate) {
-      return this._premiumDelegate.extendBasePrice(result);
-    }
-    return result;
+    return this._premiumDelegate.extendBasePrice(result);
   }
 
   get hasDinner() {
-    if (this._premiumDelegate) {
-      return this._premiumDelegate.hasDinner;
-    }
-    return undefined;
+    return this._premiumDelegate.hasDinner;
   }
 
   // 擴展方法的版本就不需要 _privateBasePrice
